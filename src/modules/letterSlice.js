@@ -56,7 +56,7 @@ export const {
 
 export const selectMemberName = (store) =>
   store.letterReducer.selectedMemberName;
-export const selectLetter = (store) =>
+export const selectLetters = (store) =>
   store.letterReducer.letters.filter(
     (letter) => letter.writedTo === store.letterReducer.selectedMemberName,
   );

@@ -1,10 +1,10 @@
-import { selectLetter, selectMemberName } from "modules/letterSlice";
+import { selectLetters, selectMemberName } from "modules/letterSlice";
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import LetterItem from "./LetterItem";
 
 export default function LetterList() {
-  const letters = useSelector(selectLetter);
+  const letters = useSelector(selectLetters);
   const selectedMemberName = useSelector(selectMemberName);
 
   return (
