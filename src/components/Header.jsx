@@ -1,35 +1,33 @@
-import { memberKoreanMap } from "lib/member";
-import { selectMember } from "modules/selectedMember";
-import { useSelector } from "react-redux";
+import members from "data/members";
+import { selectMemberName, setSelectedMemberName } from "modules/letterSlice";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import aespa from "../assets/img/aespa.jpg";
 
-export default function Header({ handleSelectMember, members }) {
-  const selectedMember = useSelector(selectMember);
+export default function Header() {
+  const selectedMemberName = useSelector(selectMemberName);
+  const dispatch = useDispatch();
+
+  const handleSelectMember = (event) => {
+    dispatch(setSelectedMemberName(event.target.value));
+  };
+
   return (
     <StyledHeader>
       <h1>에스파 팬레터 콜렉션</h1>
       <nav>
         <StyledNavList>
-          {members.map((member) => (
-            <MemberNavItem
-              key={"nav-item/" + member}
-              handleSelectMember={handleSelectMember(member)}
-              member={member}
-              selected={selectedMember === member}
-              text={memberKoreanMap[member]}
-            />
+          {members.map(({ name: memberName }) => (
+            <StyledNavListItem
+              key={memberName}
+              onClick={handleSelectMember(memberName)}
+              $selectedMember={selectedMemberName === memberName}>
+              {memberName}
+            </StyledNavListItem>
           ))}
         </StyledNavList>
       </nav>
     </StyledHeader>
-  );
-}
-function MemberNavItem({ handleSelectMember, selected, text }) {
-  return (
-    <StyledNavListItem onClick={handleSelectMember} selected={selected}>
-      {text}
-    </StyledNavListItem>
   );
 }
 
@@ -67,8 +65,8 @@ const StyledNavList = styled.ul`
   border-radius: 0.5rem;
 `;
 const StyledNavListItem = styled.li`
-  background-color: ${(props) => (props.selected ? "yellow" : "black")};
-  color: ${(props) => (props.selected ? "black" : "white")};
+  background-color: ${(props) => (props.$selectedMember ? "yellow" : "black")};
+  color: ${(props) => (props.$selectedMember ? "black" : "white")};
   border-radius: 0.5rem;
   padding: 0.5rem 2rem;
   border: 1px solid black;

@@ -1,5 +1,5 @@
+import { memberNameToKorean } from "data/members";
 import { alter } from "lib/alter";
-import { memberNameToKorean } from "lib/member";
 import timeFormat from "lib/timeFormat";
 import { IS_CONFIRM, setModalState } from "modules/modal";
 import { useDispatch } from "react-redux";

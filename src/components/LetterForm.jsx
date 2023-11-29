@@ -1,18 +1,31 @@
-import { memberKoreanMap } from "lib/member";
+import members from "data/members";
+import {
+  createLetter,
+  selectMemberName,
+  setSelectedMemberName,
+} from "modules/letterSlice";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import Button from "./common/Button";
+import useInput from "./hooks/useInput";
 
-const NICKNAME = "nickname";
-const CONTENT = "content";
-const SELECTED = "selected";
+export default function LetterForm() {
+  const [nickname, handleNickName] = useInput();
+  const [content, handleContent] = useInput();
 
-export default function LetterForm({
-  members,
-  formState,
-  handleChangeFormValue,
-  handleEnrollLetter,
-}) {
-  const { nickname, content } = formState;
+  const dispatch = useDispatch();
+  const selectedMemberName = useSelector(selectMemberName);
+
+  const handleChangeMemberName = (event) => {
+    dispatch(setSelectedMemberName(event.target.value));
+  };
+
+  const handleEnrollLetter = (event) => {
+    event.preventDefault();
+
+    dispatch(createLetter({ nickname, content }));
+  };
+
   return (
     <StyledForm onSubmit={handleEnrollLetter}>
       <StyledInputWrapper>
@@ -20,10 +33,10 @@ export default function LetterForm({
           <label htmlFor='nickname'>닉네임: </label>
           <input
             id='nickname'
-            name='content'
+            name='nickname'
             required
             value={nickname}
-            onChange={handleChangeFormValue(NICKNAME)}
+            onChange={handleNickName}
             placeholder='최대 20글자까지만 작성할 수 있습니다'
           />
         </StyledRow>
@@ -36,27 +49,27 @@ export default function LetterForm({
             rows='5'
             required
             value={content}
-            onChange={handleChangeFormValue(CONTENT)}
+            onChange={handleContent}
             maxLength={100}
             placeholder='최대 100자까지만 작성할 수 있습니다.'></textarea>
         </StyledRow>
       </StyledInputWrapper>
       <StyledSelectWrapper>
-        <label htmlFor='select-memeber'>누구에게 보내실 건가요?</label>
-        <select id='select-member' onChange={handleChangeFormValue(SELECTED)}>
-          <SelectOptions members={members} />
+        <label htmlFor='select-member'>누구에게 보내실 건가요?</label>
+        <select
+          id='select-member'
+          value={selectedMemberName}
+          onChange={handleChangeMemberName}>
+          {members.map(({ name: memberName }) => (
+            <option key={"option-" + memberName} value={memberName}>
+              {memberName}
+            </option>
+          ))}
         </select>
       </StyledSelectWrapper>
       <Button type='submit'>팬레터 등록</Button>
     </StyledForm>
   );
-}
-function SelectOptions({ members }) {
-  return members.map((member) => (
-    <option key={"options-" + member} value={member}>
-      {memberKoreanMap[member]}
-    </option>
-  ));
 }
 
 const StyledForm = styled.form`

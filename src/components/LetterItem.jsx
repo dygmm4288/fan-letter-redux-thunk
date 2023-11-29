@@ -1,17 +1,21 @@
 import timeFormat from "lib/timeFormat";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import Avatar from "./common/Avatar";
 
 export default function LetterItem({
-  handleNavigate,
   id,
   createdAt,
   nickname,
   content,
   avatar,
 }) {
+  const navigate = useNavigate();
+  const handleNavigate = () => {
+    navigate(`/details/${id}`);
+  };
   return (
-    <li onClick={handleNavigate(id)}>
+    <li onClick={handleNavigate}>
       <StyledLetterItemWrapper>
         <Avatar src={avatar} alt={nickname + "user avatar profile"} />
         <StyledLetterItemInfo>

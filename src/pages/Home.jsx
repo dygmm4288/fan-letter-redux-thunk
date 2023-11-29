@@ -1,12 +1,14 @@
-import HomeContainer from "containers/HomeContainer";
+import Header from "components/Header";
+import LetterForm from "components/LetterForm";
+import LetterList from "components/LetterList";
 import styled from "styled-components";
-
-// * 페이지와 컨테이너의 역할 동시에 수행
 
 export default function Home() {
   return (
     <StyledHome>
-      <HomeContainer />
+      <Header />
+      <LetterForm />
+      <LetterList />
     </StyledHome>
   );
 }
