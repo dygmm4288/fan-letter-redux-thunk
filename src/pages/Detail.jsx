@@ -1,26 +1,39 @@
+import AlertModal from "components/AlertModal";
+import ConfirmModal from "components/ConfirmModal";
 import EmptyLetterDetail from "components/EmptyLetterDetail";
-import LetterDetailContainer from "containers/LetterDetailContainer";
-import { alter } from "lib/alter";
-import { findLetterById, selectMemberLetterList } from "modules/memberLetters";
-import { useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import LetterDetail from "components/LetterDetail";
+import { deleteLetter, selectLetter } from "modules/letterSlice";
+import {
+  selectIsAlert,
+  selectIsConfirm,
+  setModalAllClose,
+} from "modules/modal";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 
 export default function Detail() {
-  const { memberName, id } = useParams();
-  const memberLetterList = useSelector(selectMemberLetterList);
-  const letter =
-    memberLetterList[memberName] &&
-    memberLetterList[memberName].find(findLetterById(id));
-  const ifEmptyLetterThan = alter(() => !letter);
+  const { id } = useParams();
+  const letter = useSelector(selectLetter(id));
+
+  const isConfirm = useSelector(selectIsConfirm);
+  const isAlert = useSelector(selectIsAlert);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleRemoveButton = () => {
+    dispatch(deleteLetter({ id }));
+    dispatch(setModalAllClose());
+    navigate("/");
+  };
 
   return (
     <StyledDetail>
       <Link to='/'> 홈으로</Link>
-      {ifEmptyLetterThan(
-        <EmptyLetterDetail />,
-        <LetterDetailContainer letter={letter} id={id} />,
-      )}
+      {letter ? <EmptyLetterDetail /> : <LetterDetail letter={letter} />}
+      {isConfirm && <ConfirmModal handleConfirm={handleRemoveButton} />}
+      {isAlert && <AlertModal text='아무런 수정 사항이 없습니다.' />}
     </StyledDetail>
   );
 }

@@ -1,38 +1,45 @@
-import { memberNameToKorean } from "data/members";
-import { alter } from "lib/alter";
 import timeFormat from "lib/timeFormat";
-import { IS_CONFIRM, setModalState } from "modules/modal";
+import { updateLetter } from "modules/letterSlice";
+import { IS_ALERT, IS_CONFIRM, setModalState } from "modules/modal";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import Avatar from "./common/Avatar";
 import Button from "./common/Button";
+import useInput from "./hooks/useInput";
 
-export default function LetterDetail({
-  letter,
-  isUpdate,
-  handleChangeContent,
-  contentValue,
-  handleUpdateButton,
-  handleUpdateDoneButton,
-}) {
-  const { nickname, avatar, createdAt, writedTo, content } = letter;
-  const memberName = memberNameToKorean(writedTo);
+export default function LetterDetail({ letter }) {
+  const {
+    id,
+    nickname,
+    avatar,
+    createdAt,
+    writedTo: memberName,
+    content,
+  } = letter;
+
+  const [isEditingMode, setIsEditingMode] = useState(false);
+  const [editedContent, handleEditContent] = useInput(content);
+
   const dispatch = useDispatch();
-  const UpdateButton = () => (
-    <Button handleClickEvent={handleUpdateButton}>수정</Button>
-  );
-  const RemoveButton = () => (
-    <Button
-      handleClickEvent={() => {
-        dispatch(setModalState({ key: IS_CONFIRM, value: true }));
-      }}>
-      삭제
-    </Button>
-  );
-  const UpdateDoneButton = () => (
-    <Button handleClickEvent={handleUpdateDoneButton}>수정 완료</Button>
-  );
-  const ifIsUpdateThan = alter(() => !isUpdate);
+
+  const handleOnEditMode = () => {
+    setIsEditingMode(true);
+  };
+
+  const handleClickRemoveButton = () => {
+    dispatch(setModalState({ key: IS_CONFIRM, value: true }));
+  };
+
+  const handleOffEditMode = () => {
+    if (editedContent === content) {
+      dispatch(setModalState({ key: IS_ALERT, value: true }));
+      return;
+    }
+
+    dispatch(updateLetter({ id, content: editedContent }));
+    setIsEditingMode(false);
+  };
 
   return (
     <StyledDetail>
@@ -42,17 +49,22 @@ export default function LetterDetail({
         <span>{timeFormat(createdAt)}</span>
       </StyledDetailHeader>
       <span>To : {memberName}</span>
-      {ifIsUpdateThan(
-        <StyledContent>{content}</StyledContent>,
+      {!isEditingMode ? (
+        <StyledContent>{content}</StyledContent>
+      ) : (
         <StyledContentTextArea
           maxLength={100}
-          onChange={handleChangeContent}
-          value={contentValue}
-        />,
+          onChange={handleEditContent}
+          value={editedContent}
+        />
       )}
       <StyledButtonWrapper>
-        {ifIsUpdateThan(<UpdateButton />, <UpdateDoneButton />)}
-        <RemoveButton />
+        {!isEditingMode ? (
+          <Button onClick={handleOnEditMode}>수정</Button>
+        ) : (
+          <Button onClick={handleOffEditMode} />
+        )}
+        <Button onClick={handleClickRemoveButton}>삭제</Button>
       </StyledButtonWrapper>
     </StyledDetail>
   );
