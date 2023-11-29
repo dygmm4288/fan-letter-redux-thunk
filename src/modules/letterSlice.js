@@ -60,5 +60,7 @@ export const selectLetters = (store) =>
   store.letterReducer.letters.filter(
     (letter) => letter.writedTo === store.letterReducer.selectedMemberName,
   );
+export const selectLetter = (id) => (store) =>
+  store.letterReducer.letters.find((letter) => letter.id === id);
 
 export default letterSlice.reducer;
