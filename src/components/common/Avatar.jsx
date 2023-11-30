@@ -1,16 +1,16 @@
 import styled from "styled-components";
 
-export default function Avatar({ src, nickname, style }) {
+export default function Avatar({ src, nickname, width, height }) {
   return (
-    <StyledAvatarWrapper {...style}>
+    <StyledAvatarWrapper $width={width} $height={height}>
       <img src={src} alt={nickname + "user avatar profile"} />
     </StyledAvatarWrapper>
   );
 }
 
 const StyledAvatarWrapper = styled.figure`
-  width: ${(props) => (props.width ? props.width : "60px")};
-  height: ${(props) => (props.height ? props.height : "60px")};
+  width: ${(props) => (props.$width ? props.$width + "px" : "60px")};
+  height: ${(props) => (props.$height ? props.$height + "px" : "60px")};
   border-radius: 50%;
   img {
     width: 100%;
