@@ -11,7 +11,7 @@ import Button from "../common/Button";
 import useInput from "../hooks/useInput";
 
 export default function LetterForm() {
-  const { nickname } = useSelector(selectAuth);
+  const { nickname, userId } = useSelector(selectAuth);
   const [content, handleContent] = useInput();
 
   const dispatch = useDispatch();
@@ -24,7 +24,9 @@ export default function LetterForm() {
   const handleEnrollLetter = (event) => {
     event.preventDefault();
 
-    dispatch(createLetterThunk({ nickname, content, selectedMemberName }));
+    dispatch(
+      createLetterThunk({ nickname, content, selectedMemberName, userId }),
+    );
   };
 
   return (

@@ -1,8 +1,9 @@
 import timeFormat from "lib/timeFormat";
+import { selectAuth } from "modules/auth/authSlice";
 import { updateLetterThunk } from "modules/letterSlice";
 import { DELETE_LETTER } from "modules/modalSlice";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import Avatar from "../common/Avatar";
 import Button from "../common/Button";
@@ -17,11 +18,13 @@ export default function LetterDetail({ letter }) {
     createdAt,
     writedTo: memberName,
     content,
+    userId: author,
   } = letter;
 
+  const { userId } = useSelector(selectAuth);
   const [isEditingMode, setIsEditingMode] = useState(false);
   const [editedContent, handleEditContent] = useInput(content);
-
+  console.log({ author, userId, letter });
   const dispatch = useDispatch();
 
   const { confirmModal } = useModal();
@@ -64,14 +67,16 @@ export default function LetterDetail({ letter }) {
           value={editedContent}
         />
       )}
-      <StyledButtonWrapper>
-        {!isEditingMode ? (
-          <Button onClick={handleOnEditMode}>수정</Button>
-        ) : (
-          <Button onClick={handleOffEditMode}>수정 완료</Button>
-        )}
-        <Button onClick={handleClickRemoveButton}>삭제</Button>
-      </StyledButtonWrapper>
+      {userId === author && (
+        <StyledButtonWrapper>
+          {!isEditingMode ? (
+            <Button onClick={handleOnEditMode}>수정</Button>
+          ) : (
+            <Button onClick={handleOffEditMode}>수정 완료</Button>
+          )}
+          <Button onClick={handleClickRemoveButton}>삭제</Button>
+        </StyledButtonWrapper>
+      )}
     </StyledDetail>
   );
 }

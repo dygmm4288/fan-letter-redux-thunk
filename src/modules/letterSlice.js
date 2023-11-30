@@ -18,7 +18,7 @@ export const createLetterThunk = createAsyncThunk(
   "letter/createLetterThunk",
   async (payload, thunkAPI) => {
     try {
-      const { nickname, content, selectedMemberName } = payload;
+      const { userId, nickname, content, selectedMemberName } = payload;
 
       const newLetter = {
         nickname,
@@ -26,6 +26,7 @@ export const createLetterThunk = createAsyncThunk(
         writedTo: selectedMemberName,
         avatar: defaultAvatar,
         createdAt: Date.now(),
+        userId,
       };
 
       const response = await jsonServerInstance.post("/letters", newLetter);
