@@ -1,6 +1,6 @@
 import members from "data/members";
 import {
-  createLetter,
+  createLetterThunk,
   selectMemberName,
   setSelectedMemberName,
 } from "modules/letterSlice";
@@ -23,7 +23,7 @@ export default function LetterForm() {
   const handleEnrollLetter = (event) => {
     event.preventDefault();
 
-    dispatch(createLetter({ nickname, content }));
+    dispatch(createLetterThunk({ nickname, content, selectedMemberName }));
   };
 
   return (

@@ -12,7 +12,7 @@ export default function LetterList() {
       {letters.length === 0 ? (
         <EmptyLetter memberName={selectedMemberName} />
       ) : (
-        letters.map((letter) => <LetterItem key={letter.id} {...letters} />)
+        letters.map((letter) => <LetterItem key={letter.id} {...letter} />)
       )}
     </StyledLetterList>
   );

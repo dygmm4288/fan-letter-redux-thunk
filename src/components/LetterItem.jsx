@@ -11,9 +11,11 @@ export default function LetterItem({
   avatar,
 }) {
   const navigate = useNavigate();
+
   const handleNavigate = () => {
     navigate(`/details/${id}`);
   };
+
   return (
     <li onClick={handleNavigate}>
       <StyledLetterItemWrapper>
