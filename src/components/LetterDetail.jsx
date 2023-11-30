@@ -1,12 +1,12 @@
 import timeFormat from "lib/timeFormat";
-import { updateLetter } from "modules/letterSlice";
-import { IS_ALERT, IS_CONFIRM, setModalState } from "modules/modal";
+import { deleteLetterThunk, updateLetter } from "modules/letterSlice";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import Avatar from "./common/Avatar";
 import Button from "./common/Button";
 import useInput from "./hooks/useInput";
+import useModal from "./hooks/useModal";
 
 export default function LetterDetail({ letter }) {
   const {
@@ -23,17 +23,24 @@ export default function LetterDetail({ letter }) {
 
   const dispatch = useDispatch();
 
+  const { confirmModal } = useModal();
+
   const handleOnEditMode = () => {
     setIsEditingMode(true);
   };
 
   const handleClickRemoveButton = () => {
-    dispatch(setModalState({ key: IS_CONFIRM, value: true }));
+    confirmModal({
+      name: "게시글 삭제",
+      content: "정말로 삭제하시겠습니까?",
+      onConfirm: () => {
+        dispatch(deleteLetterThunk({ id }));
+      },
+    });
   };
 
   const handleOffEditMode = () => {
     if (editedContent === content) {
-      dispatch(setModalState({ key: IS_ALERT, value: true }));
       return;
     }
 

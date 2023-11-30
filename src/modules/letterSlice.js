@@ -127,6 +127,8 @@ export const selectLetters = (store) =>
     (letter) => letter.writedTo === store.letterReducer.selectedMemberName,
   );
 export const selectLetter = (id) => (store) =>
-  store.letterReducer.letters.find((letter) => letter.id === id);
+  store.letterReducer.letters.find(
+    (letter) => letter.id.toString() === id.toString(),
+  );
 
 export default letterSlice.reducer;
