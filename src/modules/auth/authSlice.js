@@ -38,8 +38,7 @@ export const registerThunk = createAsyncThunk(
       },
     );
     if (response.data.success) {
-      thunkAPI.fulfillWithValue(response.data);
-      return;
+      return response.data;
     }
     thunkAPI.rejectWithValue(response.data);
   },
@@ -57,13 +56,12 @@ export const logInThunk = createAsyncThunk(
         },
       );
       const { accessToken, userId, success, avatar, nickname } = response.data;
-
+      console.log(response.data);
       if (success) {
-        thunkAPI.fulfillWithValue({ accessToken, userId, avatar, nickname });
-        return;
+        return { accessToken, userId, avatar, nickname };
       }
     } catch (err) {
-      thunkAPI.rejectWithValue(err);
+      return thunkAPI.rejectWithValue(err);
     }
   },
 );
