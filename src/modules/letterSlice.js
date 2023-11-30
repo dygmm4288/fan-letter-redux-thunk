@@ -1,6 +1,75 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import jsonServerInstance from "api/serverInstance";
 import { v4 as uuid } from "uuid";
 import defaultAvatar from "../assets/img/default-avatar.png";
+
+export const fetchLettersThunk = createAsyncThunk(
+  "letter/fetchLetterThunk",
+  async (payload, thunkAPI) => {
+    try {
+      const response = await jsonServerInstance.get("/letters");
+      return response.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err);
+    }
+  },
+);
+
+export const createLetterThunk = createAsyncThunk(
+  "letter/createLetterThunk",
+  async (payload, thunkAPI) => {
+    try {
+      const { nickname, content, selectedMemberName } = payload;
+
+      const newLetter = {
+        nickname,
+        content,
+        wirtedTo: selectedMemberName,
+        id: uuid(),
+        avatar: defaultAvatar,
+        createdAt: new Date(),
+      };
+
+      await jsonServerInstance.post("/letters", newLetter);
+
+      thunkAPI.dispatch(createLetter(newLetter));
+
+      return payload;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err);
+    }
+  },
+);
+
+export const updateLetterThunk = createAsyncThunk(
+  "letter/updateLetterThunk",
+  async (payload, thunkAPI) => {
+    const { id, content } = payload;
+    try {
+      await jsonServerInstance.patch(`/letters/${id}`, { content });
+      thunkAPI.dispatch(updateLetter({ id, content }));
+      return { id, content };
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err);
+    }
+  },
+);
+
+export const deleteLetterThunk = createAsyncThunk(
+  "letter/deleteLetterThunk",
+  async (payload, thunkAPI) => {
+    const { id } = payload;
+    try {
+      await jsonServerInstance.delete(`/letters/${id}`);
+      thunkAPI.dispatch(deleteLetter({ id }));
+      return { id };
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err);
+    }
+  },
+);
+
+// 어떻게 해야 처음에 letterSlice가 들어올 때 맨 처음에 데이터를 가져올까?
 
 const initialState = {
   letters: [],
@@ -12,18 +81,7 @@ const letterSlice = createSlice({
   initialState,
   reducers: {
     createLetter: (state, action) => {
-      const { nickname, content } = action.payload;
-
-      const newLetter = {
-        nickname,
-        content,
-        wirtedTo: state.selectedMemberName,
-        id: uuid(),
-        avatar: defaultAvatar,
-        createdAt: new Date(),
-      };
-
-      state.letters.push(newLetter);
+      state.letters.push(action.payload);
     },
 
     updateLetter: (state, action) => {
@@ -46,7 +104,17 @@ const letterSlice = createSlice({
       state.selectedMemberName = action.payload;
     },
   },
+  extraReducers: {
+    [fetchLettersThunk.rejected]: (state, action) => {},
+    [fetchLettersThunk.fulfilled]: (state, action) => {
+      state.letters = action.payload;
+    },
+    [fetchLettersThunk.pending]: (state, action) => {
+      console.log("pending fetchLettersThunk");
+    },
+  },
 });
+
 export const {
   createLetter,
   updateLetter,
