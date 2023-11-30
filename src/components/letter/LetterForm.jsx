@@ -1,4 +1,5 @@
 import members from "data/members";
+import { selectAuth } from "modules/auth/authSlice";
 import {
   createLetterThunk,
   selectMemberName,
@@ -10,7 +11,7 @@ import Button from "../common/Button";
 import useInput from "../hooks/useInput";
 
 export default function LetterForm() {
-  const [nickname, handleNickName] = useInput();
+  const { nickname } = useSelector(selectAuth);
   const [content, handleContent] = useInput();
 
   const dispatch = useDispatch();
@@ -31,14 +32,7 @@ export default function LetterForm() {
       <StyledInputWrapper>
         <StyledRow>
           <label htmlFor='nickname'>닉네임: </label>
-          <input
-            id='nickname'
-            name='nickname'
-            required
-            value={nickname}
-            onChange={handleNickName}
-            placeholder='최대 20글자까지만 작성할 수 있습니다'
-          />
+          <p>{nickname}</p>
         </StyledRow>
         <StyledRow>
           <label htmlFor='content'>내용:</label>
