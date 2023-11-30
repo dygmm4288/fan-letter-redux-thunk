@@ -2,17 +2,18 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import {
   getAccessTokenFromLocal,
+  getAvatarSrcFromLocal,
+  getNickNameFromLocal,
+  getUserIdFromLocal,
   setAccessTokenAtLocal,
 } from "lib/localStorage";
 import handleLoginThunk from "./handleLoginThunk";
 import handleRegisterThunk from "./handleRegisterThunk";
-export const ACCESS_TOKEN = "access_token";
-
 // TODO: 더 줄일 수 있나 ? 이게 최선인가?
 const initialState = {
-  userId: null,
-  avatar: null,
-  nickname: "",
+  userId: getUserIdFromLocal(),
+  avatar: getAvatarSrcFromLocal(),
+  nickname: getNickNameFromLocal(),
 
   isLogin: getAccessTokenFromLocal() ? true : false,
 
@@ -56,7 +57,6 @@ export const logInThunk = createAsyncThunk(
         },
       );
       const { accessToken, userId, success, avatar, nickname } = response.data;
-      console.log(response.data);
       if (success) {
         return { accessToken, userId, avatar, nickname };
       }

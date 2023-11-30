@@ -1,4 +1,9 @@
-import { setAccessTokenAtLocal } from "lib/localStorage";
+import {
+  setAccessTokenAtLocal,
+  setAvatarSrcAtLocal,
+  setNickNameAtLocal,
+  setUserIdAtLocal,
+} from "lib/localStorage";
 
 export default function handleLoginThunk(logInThunk) {
   return {
@@ -12,6 +17,9 @@ export default function handleLoginThunk(logInThunk) {
       const { accessToken, userId, avatar, nickname } = action.payload;
 
       setAccessTokenAtLocal(accessToken);
+      setUserIdAtLocal(userId);
+      setNickNameAtLocal(nickname);
+      setAvatarSrcAtLocal(avatar);
 
       state.userId = userId;
       state.avatar = avatar;
