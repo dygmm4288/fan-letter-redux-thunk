@@ -1,9 +1,18 @@
 import Header from "components/Header";
 import LetterForm from "components/LetterForm";
 import LetterList from "components/LetterList";
+import { fetchLettersThunk } from "modules/letterSlice";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
 
 export default function Home() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchLettersThunk());
+  }, []);
+
   return (
     <StyledHome>
       <Header />
