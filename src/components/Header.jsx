@@ -8,8 +8,8 @@ export default function Header() {
   const selectedMemberName = useSelector(selectMemberName);
   const dispatch = useDispatch();
 
-  const handleSelectMember = (event) => {
-    dispatch(setSelectedMemberName(event.target.value));
+  const handleSelectMember = (memberName) => () => {
+    dispatch(setSelectedMemberName(memberName));
   };
 
   return (
