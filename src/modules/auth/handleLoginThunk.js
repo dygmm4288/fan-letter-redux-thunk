@@ -19,11 +19,13 @@ export default function handleLoginThunk(logInThunk) {
 
       state.isLogInLoading = false;
       state.isLogInSuccess = true;
+      state.isLogin = true;
     },
     [logInThunk.rejected]: (state, action) => {
       state.isLogInLoading = false;
       state.isLogInError = true;
       state.logInError = action.payload;
+      state.isLogin = false;
     },
   };
 }
