@@ -1,7 +1,10 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { deleteLetterThunk } from "./letterSlice";
 
 export const TYPE_CONFIRM = "confirm";
 export const TYPE_ALERT = "alert";
+
+export const DELETE_LETTER = "modal/deleteLetter";
 
 const initialState = {
   isModalOpen: false,
@@ -9,30 +12,46 @@ const initialState = {
   name: "",
   content: "",
   errorContent: "",
-  onConfirm: null,
+  confirmAction: null,
 };
+
+export const handleConfirmThunk = createAsyncThunk(
+  "modal/handleConfirm",
+  (payload, thunkAPI) => {
+    const { confirmAction } = thunkAPI.getState().modalReducer;
+    switch (confirmAction.type) {
+      case DELETE_LETTER:
+        thunkAPI.dispatch(deleteLetterThunk(confirmAction.payload));
+        break;
+      default:
+        break;
+    }
+    return;
+  },
+);
 
 const modalSlice = createSlice({
   name: "modal",
   initialState,
   reducers: {
-    openModal: (state, action) => {
-      state = {
+    openModal: (_, action) => {
+      return {
         isModalOpen: true,
         ...action.payload,
       };
     },
-    closeModal: (state) => {
-      state = initialState;
+    closeModal: () => {
+      return { ...initialState };
     },
-    handleConfirm: (state) => {
-      if (state.onConfirm) state.onConfirm();
+  },
+  extraReducers: {
+    [handleConfirmThunk.fulfilled]: (state, action) => {
       state = initialState;
     },
   },
 });
 
-export const { openModal, closeModal, handleConfirm } = modalSlice.actions;
+export const { openModal, closeModal } = modalSlice.actions;
 
 export const selectModalState = (store) => store.modalReducer;
 
