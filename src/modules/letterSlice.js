@@ -28,9 +28,8 @@ export const createLetterThunk = createAsyncThunk(
         createdAt: Date.now(),
       };
 
-      await jsonServerInstance.post("/letters", newLetter);
-
-      thunkAPI.dispatch(createLetter(newLetter));
+      const response = await jsonServerInstance.post("/letters", newLetter);
+      thunkAPI.dispatch(createLetter(response.data));
 
       return payload;
     } catch (err) {
@@ -44,8 +43,8 @@ export const updateLetterThunk = createAsyncThunk(
   async (payload, thunkAPI) => {
     const { id, content } = payload;
     try {
-      await jsonServerInstance.patch(`/letters/${id}`, { content });
       thunkAPI.dispatch(updateLetter({ id, content }));
+      await jsonServerInstance.patch(`/letters/${id}`, { content });
       return { id, content };
     } catch (err) {
       return thunkAPI.rejectWithValue(err);
@@ -57,9 +56,9 @@ export const deleteLetterThunk = createAsyncThunk(
   "letter/deleteLetterThunk",
   async (payload, thunkAPI) => {
     const { id } = payload;
+    thunkAPI.dispatch(deleteLetter({ id }));
     try {
       await jsonServerInstance.delete(`/letters/${id}`);
-      thunkAPI.dispatch(deleteLetter({ id }));
       return { id };
     } catch (err) {
       return thunkAPI.rejectWithValue(err);
@@ -86,8 +85,8 @@ const letterSlice = createSlice({
       const { id, content } = action.payload;
 
       const index = state.letters.findIndex((letter) => letter.id === id);
-
-      state.letters[index] = content;
+      if (index === -1) return;
+      state.letters[index].content = content;
     },
     deleteLetter: (state, action) => {
       const { id } = action.payload;
@@ -122,13 +121,12 @@ export const {
 
 export const selectMemberName = (store) =>
   store.letterReducer.selectedMemberName;
-export const selectLetters = (store) =>
-  store.letterReducer.letters.filter(
-    (letter) => letter.writedTo === store.letterReducer.selectedMemberName,
-  );
-export const selectLetter = (id) => (store) =>
-  store.letterReducer.letters.find(
+export const selectLetters = (store) => store.letterReducer.letters;
+export const selectLetter = (id) => (store) => {
+  console.log(store.letterReducer.letters);
+  return store.letterReducer.letters.find(
     (letter) => letter.id.toString() === id.toString(),
   );
+};
 
 export default letterSlice.reducer;
