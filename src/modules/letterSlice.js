@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import jsonServerInstance from "api/serverInstance";
-import { v4 as uuid } from "uuid";
 import defaultAvatar from "../assets/img/default-avatar.png";
 
 export const fetchLettersThunk = createAsyncThunk(
@@ -24,10 +23,9 @@ export const createLetterThunk = createAsyncThunk(
       const newLetter = {
         nickname,
         content,
-        wirtedTo: selectedMemberName,
-        id: uuid(),
+        writedTo: selectedMemberName,
         avatar: defaultAvatar,
-        createdAt: new Date(),
+        createdAt: Date.now(),
       };
 
       await jsonServerInstance.post("/letters", newLetter);
