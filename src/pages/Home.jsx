@@ -1,6 +1,6 @@
 import Header from "components/Header";
-import LetterForm from "components/LetterForm";
-import LetterList from "components/LetterList";
+import LetterForm from "components/letter/LetterForm";
+import LetterList from "components/letter/LetterList";
 import { fetchLettersThunk } from "modules/letterSlice";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";

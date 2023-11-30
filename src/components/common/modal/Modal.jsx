@@ -2,10 +2,11 @@ import StyledButton from "components/common/Button";
 import {
   TYPE_CONFIRM,
   closeModal,
-  handleConfirm,
+  handleConfirmThunk,
   selectModalState,
 } from "modules/modalSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 export default function Modal() {
@@ -13,6 +14,7 @@ export default function Modal() {
     useSelector(selectModalState);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleCloseModal = (event) => {
     if (event.target !== event.currentTarget) return;
@@ -20,12 +22,15 @@ export default function Modal() {
   };
 
   const handleConfirmAction = () => {
-    dispatch(handleConfirm());
+    dispatch(handleConfirmThunk());
+    dispatch(closeModal());
+    navigate("/");
   };
+
   return (
     <>
       {isModalOpen && (
-        <StModalWrapper isModalOpen={isModalOpen} onClick={handleCloseModal}>
+        <StModalWrapper onClick={handleCloseModal}>
           <StModal>
             <p>{content}</p>
             <StButtonContainer>

@@ -1,12 +1,13 @@
 import timeFormat from "lib/timeFormat";
-import { deleteLetterThunk, updateLetter } from "modules/letterSlice";
+import { updateLetterThunk } from "modules/letterSlice";
+import { DELETE_LETTER } from "modules/modalSlice";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import Avatar from "./common/Avatar";
-import Button from "./common/Button";
-import useInput from "./hooks/useInput";
-import useModal from "./hooks/useModal";
+import Avatar from "../common/Avatar";
+import Button from "../common/Button";
+import useInput from "../hooks/useInput";
+import useModal from "../hooks/useModal";
 
 export default function LetterDetail({ letter }) {
   const {
@@ -33,19 +34,17 @@ export default function LetterDetail({ letter }) {
     confirmModal({
       name: "게시글 삭제",
       content: "정말로 삭제하시겠습니까?",
-      onConfirm: () => {
-        dispatch(deleteLetterThunk({ id }));
-      },
+      confirmAction: { type: DELETE_LETTER, payload: { id } },
     });
   };
 
   const handleOffEditMode = () => {
+    setIsEditingMode(false);
     if (editedContent === content) {
       return;
     }
 
-    dispatch(updateLetter({ id, content: editedContent }));
-    setIsEditingMode(false);
+    dispatch(updateLetterThunk({ id, content: editedContent }));
   };
 
   return (
@@ -69,7 +68,7 @@ export default function LetterDetail({ letter }) {
         {!isEditingMode ? (
           <Button onClick={handleOnEditMode}>수정</Button>
         ) : (
-          <Button onClick={handleOffEditMode} />
+          <Button onClick={handleOffEditMode}>수정 완료</Button>
         )}
         <Button onClick={handleClickRemoveButton}>삭제</Button>
       </StyledButtonWrapper>

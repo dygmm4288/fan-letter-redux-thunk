@@ -6,13 +6,18 @@ import LetterItem from "./LetterItem";
 export default function LetterList() {
   const letters = useSelector(selectLetters);
   const selectedMemberName = useSelector(selectMemberName);
+  const lettersFilterBySelectedMember = letters.filter(
+    (letter) => letter.writedTo === selectedMemberName,
+  );
 
   return (
     <StyledLetterList>
-      {letters.length === 0 ? (
+      {lettersFilterBySelectedMember.length === 0 ? (
         <EmptyLetter memberName={selectedMemberName} />
       ) : (
-        letters.map((letter) => <LetterItem key={letter.id} {...letter} />)
+        lettersFilterBySelectedMember.map((letter) => (
+          <LetterItem key={letter.writedTo + letter.id} {...letter} />
+        ))
       )}
     </StyledLetterList>
   );

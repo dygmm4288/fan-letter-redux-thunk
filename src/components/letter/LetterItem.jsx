@@ -1,7 +1,7 @@
 import timeFormat from "lib/timeFormat";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import Avatar from "./common/Avatar";
+import Avatar from "../common/Avatar";
 
 export default function LetterItem({
   id,

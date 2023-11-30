@@ -1,5 +1,5 @@
 import EmptyLetterDetail from "components/EmptyLetterDetail";
-import LetterDetail from "components/LetterDetail";
+import LetterDetail from "components/letter/LetterDetail";
 import { selectLetter } from "modules/letterSlice";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";

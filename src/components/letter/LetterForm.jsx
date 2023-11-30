@@ -6,8 +6,8 @@ import {
 } from "modules/letterSlice";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import Button from "./common/Button";
-import useInput from "./hooks/useInput";
+import Button from "../common/Button";
+import useInput from "../hooks/useInput";
 
 export default function LetterForm() {
   const [nickname, handleNickName] = useInput();
