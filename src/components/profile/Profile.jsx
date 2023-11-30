@@ -1,16 +1,17 @@
 import Avatar from "components/common/Avatar";
 import StyledButton from "components/common/Button";
+import { selectAuth } from "modules/auth/authSlice";
+import { useSelector } from "react-redux";
 import styled from "styled-components";
 
 export default function Profile() {
-  const nickname = "그으으으으";
-  const userId = "yeolttt";
+  const { userId, nickname, avatar } = useSelector(selectAuth);
 
   return (
     <StWrapper>
       <StProfileWrapper>
         <h1>프로필 관리</h1>
-        <Avatar width={128} height={128} />
+        <Avatar src={avatar} width={128} height={128} />
         <h3>{nickname}</h3>
         <p>{userId}</p>
         <StyledButton>수정하기</StyledButton>
