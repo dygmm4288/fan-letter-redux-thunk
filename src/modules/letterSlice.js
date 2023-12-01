@@ -87,7 +87,7 @@ const letterSlice = createSlice({
   initialState,
   reducers: {
     createLetter: (state, action) => {
-      state.letters.push(action.payload);
+      state.letters = [action.payload, ...state.letters];
     },
 
     updateLetter: (state, action) => {
