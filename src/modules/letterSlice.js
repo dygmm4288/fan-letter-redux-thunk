@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import jsonServerInstance from "api/serverInstance";
+import _ from "lodash";
 import defaultAvatar from "../assets/img/default-avatar.png";
 import { signOut } from "./auth/authSlice";
 
@@ -8,6 +9,11 @@ const initialState = {
   selectedMemberName: "카리나",
   error: null,
   isLoading: false,
+};
+
+const handleThunkError = (err, thunkAPI) => {
+  thunkAPI.dispatch(signOut());
+  return thunkAPI.rejectWithValue(err);
 };
 
 export const fetchLettersThunk = createAsyncThunk(
@@ -19,8 +25,7 @@ export const fetchLettersThunk = createAsyncThunk(
       );
       return response.data;
     } catch (err) {
-      thunkAPI.dispatch(signOut());
-      return thunkAPI.rejectWithValue(err);
+      return handleThunkError(err, thunkAPI);
     }
   },
 );
@@ -44,8 +49,7 @@ export const createLetterThunk = createAsyncThunk(
 
       return payload;
     } catch (err) {
-      thunkAPI.dispatch(signOut());
-      return thunkAPI.rejectWithValue(err);
+      return handleThunkError(err, thunkAPI);
     }
   },
 );
@@ -59,8 +63,7 @@ export const updateLetterThunk = createAsyncThunk(
       await jsonServerInstance.patch(`/letters/${id}`, { content });
       return { id, content };
     } catch (err) {
-      thunkAPI.dispatch(signOut());
-      return thunkAPI.rejectWithValue(err);
+      return handleThunkError(err, thunkAPI);
     }
   },
 );
@@ -74,13 +77,13 @@ export const deleteLetterThunk = createAsyncThunk(
       await jsonServerInstance.delete(`/letters/${id}`);
       return { id };
     } catch (err) {
-      thunkAPI.dispatch(signOut());
-      return thunkAPI.rejectWithValue(err);
+      return handleThunkError(err, thunkAPI);
     }
   },
 );
 
 // 어떻게 해야 처음에 letterSlice가 들어올 때 맨 처음에 데이터를 가져올까?
+const isEqualId = (targetId) => (sourceId) => _.isEqual(targetId, sourceId);
 
 const letterSlice = createSlice({
   name: "letter",
@@ -89,21 +92,18 @@ const letterSlice = createSlice({
     createLetter: (state, action) => {
       state.letters = [action.payload, ...state.letters];
     },
-
     updateLetter: (state, action) => {
       const { id, content } = action.payload;
+      const index = _.findIndex(state.letters, isEqualId(id));
 
-      const index = state.letters.findIndex((letter) => letter.id === id);
       if (index === -1) return;
       state.letters[index].content = content;
     },
     deleteLetter: (state, action) => {
       const { id } = action.payload;
-
-      const index = state.letters.findIndex((letter) => letter.id === id);
+      const index = _.findIndex(state.letters, isEqualId(id));
 
       if (index !== -1) return;
-
       state.letters.splice(index, 1);
     },
     setSelectedMemberName: (state, action) => {
@@ -124,7 +124,6 @@ const letterSlice = createSlice({
       state.isLoading = false;
     },
     [fetchLettersThunk.rejected]: (state, action) => {
-      console.log(action.payload?.response.data.message);
       state.error =
         action.payload?.response.data.message ||
         "네트워크 통신에 실패했습니다.";
