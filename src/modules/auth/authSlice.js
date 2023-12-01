@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import jsonServerInstance from "api/serverInstance";
 import axios from "axios";
 import {
   getAccessTokenFromLocal,
@@ -86,6 +87,7 @@ export const updateProfileThunk = createAsyncThunk(
   "auth/update-profile",
   async (payload, thunkAPI) => {
     const accessToken = getAccessTokenFromLocal();
+    const userId = getUserIdFromLocal();
     const headers = {
       "Content-Type": "multipart/form-data",
       Authorization: `Bearer ${accessToken}`,
@@ -101,6 +103,12 @@ export const updateProfileThunk = createAsyncThunk(
         { headers },
       );
       if (response.data.success) {
+        const body = { ...response.data };
+
+        delete body.success;
+        delete body.message;
+
+        await jsonServerInstance.patch(`/letters/profile/${userId}`, body);
         return response.data;
       }
       return thunkAPI.rejectWithValue(response.data);
