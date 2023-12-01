@@ -1,5 +1,5 @@
 import Toast from "components/common/Toast";
-import Router from "pages/Router";
+import Router from "Router";
 
 function App() {
   return (
