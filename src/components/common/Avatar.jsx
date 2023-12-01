@@ -1,8 +1,8 @@
 import styled from "styled-components";
 
-export default function Avatar({ src, nickname, width, height }) {
+export default function Avatar({ src, nickname, width, height, ...rest }) {
   return (
-    <StyledAvatarWrapper $width={width} $height={height}>
+    <StyledAvatarWrapper $width={width} $height={height} {...rest}>
       <img src={src} alt={nickname + "user avatar profile"} />
     </StyledAvatarWrapper>
   );

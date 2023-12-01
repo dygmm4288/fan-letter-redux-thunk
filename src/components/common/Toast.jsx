@@ -1,4 +1,5 @@
 import { clearLoadingState, selectAuth } from "modules/auth/authSlice";
+import { clearLetterState, selectLetterState } from "modules/letterSlice";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
@@ -13,6 +14,7 @@ export default function Toast() {
     isUpdateError,
     isUpdateSuccess,
   } = useSelector(selectAuth);
+  const { error: letterError } = useSelector(selectLetterState);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -41,7 +43,11 @@ export default function Toast() {
     if (isUpdateError) {
       toast.error(isUpdateError, optionToast);
     }
+    if (letterError) {
+      toast.error(letterError, optionToast);
+    }
     dispatch(clearLoadingState());
+    dispatch(clearLetterState());
   }, [
     isLogInSuccess,
     isSignUpSuccess,
@@ -49,6 +55,7 @@ export default function Toast() {
     logInError,
     isUpdateError,
     isUpdateSuccess,
+    letterError,
     dispatch,
   ]);
   return <ToastContainer {...optionToast} />;

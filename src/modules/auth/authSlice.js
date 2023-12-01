@@ -10,6 +10,7 @@ import {
 import handleLoginThunk from "./handleLoginThunk";
 import handleRegisterThunk from "./handleRegisterThunk";
 import handleUpdateProfileThunk from "./handleUpdateProfileThunk";
+
 // TODO: 더 줄일 수 있나 ? 이게 최선인가?
 const initialLoadingState = {
   isSignUpLoading: false,
@@ -64,7 +65,7 @@ export const logInThunk = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       const response = await axios.post(
-        process.env.REACT_APP_AUTH_URL + "/login",
+        process.env.REACT_APP_AUTH_URL + "/login?expiresIn=1m",
         {
           id: payload.id,
           password: payload.password,

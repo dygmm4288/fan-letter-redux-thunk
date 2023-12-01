@@ -1,6 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import jsonServerInstance from "api/serverInstance";
 import defaultAvatar from "../assets/img/default-avatar.png";
+import { signOut } from "./auth/authSlice";
+
+const initialState = {
+  letters: [],
+  selectedMemberName: "카리나",
+  error: null,
+  isLoading: false,
+};
 
 export const fetchLettersThunk = createAsyncThunk(
   "letter/fetchLetterThunk",
@@ -9,6 +17,7 @@ export const fetchLettersThunk = createAsyncThunk(
       const response = await jsonServerInstance.get("/letters");
       return response.data;
     } catch (err) {
+      thunkAPI.dispatch(signOut());
       return thunkAPI.rejectWithValue(err);
     }
   },
@@ -34,6 +43,7 @@ export const createLetterThunk = createAsyncThunk(
 
       return payload;
     } catch (err) {
+      thunkAPI.dispatch(signOut());
       return thunkAPI.rejectWithValue(err);
     }
   },
@@ -48,6 +58,7 @@ export const updateLetterThunk = createAsyncThunk(
       await jsonServerInstance.patch(`/letters/${id}`, { content });
       return { id, content };
     } catch (err) {
+      thunkAPI.dispatch(signOut());
       return thunkAPI.rejectWithValue(err);
     }
   },
@@ -62,17 +73,13 @@ export const deleteLetterThunk = createAsyncThunk(
       await jsonServerInstance.delete(`/letters/${id}`);
       return { id };
     } catch (err) {
+      thunkAPI.dispatch(signOut());
       return thunkAPI.rejectWithValue(err);
     }
   },
 );
 
 // 어떻게 해야 처음에 letterSlice가 들어올 때 맨 처음에 데이터를 가져올까?
-
-const initialState = {
-  letters: [],
-  selectedMemberName: "카리나",
-};
 
 const letterSlice = createSlice({
   name: "letter",
@@ -101,14 +108,26 @@ const letterSlice = createSlice({
     setSelectedMemberName: (state, action) => {
       state.selectedMemberName = action.payload;
     },
+    clearLetterState: (state) => {
+      state.error = null;
+      state.isLoading = false;
+    },
   },
   extraReducers: {
-    [fetchLettersThunk.rejected]: (state, action) => {},
+    [fetchLettersThunk.pending]: (state, action) => {
+      state.error = null;
+      state.isLoading = true;
+    },
     [fetchLettersThunk.fulfilled]: (state, action) => {
       state.letters = action.payload;
+      state.isLoading = false;
     },
-    [fetchLettersThunk.pending]: (state, action) => {
-      console.log("pending fetchLettersThunk");
+    [fetchLettersThunk.rejected]: (state, action) => {
+      console.log(action.payload?.response.data.message);
+      state.error =
+        action.payload?.response.data.message ||
+        "네트워크 통신에 실패했습니다.";
+      state.isLoading = false;
     },
   },
 });
@@ -118,6 +137,7 @@ export const {
   updateLetter,
   deleteLetter,
   setSelectedMemberName,
+  clearLetterState,
 } = letterSlice.actions;
 
 export const selectMemberName = (store) =>
@@ -129,5 +149,6 @@ export const selectLetter = (id) => (store) => {
     (letter) => letter.id.toString() === id.toString(),
   );
 };
+export const selectLetterState = (store) => store.letterReducer;
 
 export default letterSlice.reducer;

@@ -29,13 +29,17 @@ export default function handleLoginThunk(logInThunk) {
       state.isLogin = true;
     },
     [logInThunk.rejected]: (state, action) => {
-      console.log(action.payload.response);
       state.isLogInLoading = false;
       state.isLogInError = true;
       state.logInError =
         action.payload?.response.data.message ||
         "네트워크 통신에 실패했습니다.";
       state.isLogin = false;
+
+      setAccessTokenAtLocal(null);
+      setUserIdAtLocal(null);
+      setNickNameAtLocal(null);
+      setAvatarSrcAtLocal(null);
     },
   };
 }

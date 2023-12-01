@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getAccessTokenFromLocal } from "lib/localStorage";
 
 const authServerInstance = axios.create({
   baseURL: process.env.REACT_APP_AUTH_URL,
@@ -10,23 +11,26 @@ const jsonServerInstance = axios.create({
 //TODO: 인증받아야 사용할 수 있게끔 구현해야함
 jsonServerInstance.interceptors.request.use(
   async function (config) {
-    /* const token = getAccessTokenFromLocal();
+    const token = getAccessTokenFromLocal();
+
     if (!token) {
       return new Error("Not in token.");
     }
+
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
     try {
-      const response = await authServerInstance.get("/user", {
-        headers: { Authorization: `Bearer  ${token}` },
-      });
+      const response = await authServerInstance.get("/user", { headers });
 
       if (response.data.success) {
         return config;
       }
-      return new Error("유효하지 않은 토큰입니다.");
+      return Promise.reject(response.data);
     } catch (err) {
-      return new Error("유효하지 않은 토큰입니다.");
-    } */
-    return config;
+      return Promise.reject(err);
+    }
   },
   function (error) {
     console.error("인터셉터 요청 오류", error);
