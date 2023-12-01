@@ -11,7 +11,7 @@ import Button from "../common/Button";
 import useInput from "../hooks/useInput";
 
 export default function LetterForm() {
-  const { nickname, userId } = useSelector(selectAuth);
+  const { nickname, userId, avatar } = useSelector(selectAuth);
   const [content, handleContent, setContent] = useInput();
 
   const dispatch = useDispatch();
@@ -25,7 +25,13 @@ export default function LetterForm() {
     event.preventDefault();
 
     dispatch(
-      createLetterThunk({ nickname, content, selectedMemberName, userId }),
+      createLetterThunk({
+        nickname,
+        content,
+        selectedMemberName,
+        userId,
+        avatar,
+      }),
     );
     setContent("");
   };

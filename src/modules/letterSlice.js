@@ -27,13 +27,12 @@ export const createLetterThunk = createAsyncThunk(
   "letter/createLetterThunk",
   async (payload, thunkAPI) => {
     try {
-      const { userId, nickname, content, selectedMemberName } = payload;
-
+      const { userId, nickname, content, selectedMemberName, avatar } = payload;
       const newLetter = {
         nickname,
         content,
         writedTo: selectedMemberName,
-        avatar: defaultAvatar,
+        avatar: avatar || defaultAvatar,
         createdAt: Date.now(),
         userId,
       };

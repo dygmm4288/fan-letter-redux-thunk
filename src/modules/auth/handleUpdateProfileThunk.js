@@ -9,7 +9,7 @@ export default function handleUpdateProfileThunk(thunk) {
     [thunk.fulfilled]: (state, action) => {
       state.isUpdateLoading = false;
       state.isUpdateSuccess = true;
-      console.log(action.payload);
+
       if (action.payload?.nickname) state.nickname = action.payload.nickname;
       if (action.payload?.avatar) state.avatar = action.payload.avatar;
     },
