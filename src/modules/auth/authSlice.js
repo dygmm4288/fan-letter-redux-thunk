@@ -9,6 +9,7 @@ import {
 } from "lib/localStorage";
 import handleLoginThunk from "./handleLoginThunk";
 import handleRegisterThunk from "./handleRegisterThunk";
+import handleUpdateProfileThunk from "./handleUpdateProfileThunk";
 // TODO: 더 줄일 수 있나 ? 이게 최선인가?
 const initialLoadingState = {
   isSignUpLoading: false,
@@ -20,12 +21,16 @@ const initialLoadingState = {
   isLogInError: false,
   isLogInSuccess: false,
   logInError: null,
+
+  isUpdateLoading: false,
+  isUpdateError: false,
+  isUpdateSuccess: false,
+  updateError: null,
 };
 const initialState = {
   userId: getUserIdFromLocal(),
   avatar: getAvatarSrcFromLocal(),
   nickname: getNickNameFromLocal(),
-
   isLogin: getAccessTokenFromLocal() ? true : false,
 
   ...initialLoadingState,
@@ -79,7 +84,7 @@ export const logInThunk = createAsyncThunk(
 export const updateProfileThunk = createAsyncThunk(
   "auth/update-profile",
   async (payload, thunkAPI) => {
-    const accessToken = thunkAPI.getState().authReducer.accessToken;
+    const accessToken = getAccessTokenFromLocal();
     const headers = {
       "Content-Type": "multipart/form-data",
       Authorization: `Bearer ${accessToken}`,
@@ -125,6 +130,7 @@ const authSlice = createSlice({
     // ? 과연 좋은 판단일까? 내 요점은 관심사의 분리.... 근데 이 파일이 과연 관심사의 분리를 한게 맞을 까?
     ...handleRegisterThunk(registerThunk),
     ...handleLoginThunk(logInThunk),
+    ...handleUpdateProfileThunk(updateProfileThunk),
   },
 });
 

@@ -1,20 +1,99 @@
 import Avatar from "components/common/Avatar";
 import StyledButton from "components/common/Button";
-import { selectAuth } from "modules/auth/authSlice";
-import { useSelector } from "react-redux";
+import useInput from "components/hooks/useInput";
+import _ from "lodash";
+import { selectAuth, updateProfileThunk } from "modules/auth/authSlice";
+import { useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 
 export default function Profile() {
   const { userId, nickname, avatar } = useSelector(selectAuth);
 
+  const [isEditingMode, setIsEditingMode] = useState(false);
+  const [editedNickName, handleEditedNickName] = useInput(nickname);
+  const [avatarSrc, setAvatarSrc] = useState(avatar);
+
+  const dispatch = useDispatch();
+
+  const inputRef = useRef(null);
+
+  const handleUpdateProfile = (event) => {
+    event.preventDefault();
+    const newUserProfile = {};
+
+    // 프로필 이미지가 변경 됐을 경우
+    if (avatarSrc !== avatar) {
+      newUserProfile["avatar"] = inputRef.current.files[0];
+    }
+    // 닉네임이 변경됐을 경우
+    if (nickname !== editedNickName) {
+      newUserProfile["nickname"] = editedNickName;
+    }
+
+    if (_.isEmpty(newUserProfile)) {
+      toast.warn("변경사항이 없습니다.");
+    } else {
+      dispatch(updateProfileThunk(newUserProfile));
+    }
+    handleToggleEditingMode();
+  };
+
+  const handleUploadInputImgFile = (event) => {
+    const file = event.currentTarget.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarSrc(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleToggleEditingMode = () => {
+    setIsEditingMode((prevEditingMode) => !prevEditingMode);
+  };
+
+  const handleOpenFileSystem = () => {
+    inputRef.current.click();
+  };
+
   return (
     <StWrapper>
-      <StProfileWrapper>
+      <StProfileWrapper onSubmit={handleUpdateProfile}>
         <h1>프로필 관리</h1>
-        <Avatar src={avatar} width={128} height={128} />
-        <h3>{nickname}</h3>
+        <Avatar src={avatarSrc} onClick={handleOpenFileSystem} />
+        <StFileInput
+          type='file'
+          ref={inputRef}
+          onChange={handleUploadInputImgFile}
+          disabled={!isEditingMode}
+        />
+        {!isEditingMode ? (
+          <h3>{nickname}</h3>
+        ) : (
+          <input
+            value={editedNickName}
+            placeholder='아이디 (4~10글자)'
+            onChange={handleEditedNickName}
+          />
+        )}
+
         <p>{userId}</p>
-        <StyledButton>수정하기</StyledButton>
+        {!isEditingMode ? (
+          <StyledButton type={"button"} onClick={handleToggleEditingMode}>
+            수정하기
+          </StyledButton>
+        ) : (
+          <StButtonContainer>
+            <StyledButton type={"button"} onClick={handleToggleEditingMode}>
+              취소
+            </StyledButton>
+            <StyledButton type={"submit"}>수정완료</StyledButton>
+          </StButtonContainer>
+        )}
       </StProfileWrapper>
     </StWrapper>
   );
@@ -28,7 +107,7 @@ const StWrapper = styled.div`
     margin: auto;
   }
 `;
-const StProfileWrapper = styled.div`
+const StProfileWrapper = styled.form`
   width: 450px;
   height: 300px;
   padding: 1rem;
@@ -51,4 +130,15 @@ const StProfileWrapper = styled.div`
   img {
     margin: 0 auto;
   }
+`;
+const StButtonContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem;
+`;
+
+const StFileInput = styled.input`
+  display: none;
 `;
