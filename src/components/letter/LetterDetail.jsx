@@ -114,6 +114,7 @@ const StyledContent = styled.p`
   border-radius: 0.5rem;
   padding: 2rem 1rem;
   color: white;
+  word-wrap: break-word;
 `;
 const StyledContentTextArea = styled.textarea`
   background-color: black;
@@ -121,6 +122,7 @@ const StyledContentTextArea = styled.textarea`
   border-radius: 0.5rem;
   padding: 2rem 1rem;
   color: white;
+  word-wrap: break-word;
 `;
 
 const StyledButtonWrapper = styled.div`
