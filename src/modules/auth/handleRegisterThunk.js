@@ -15,7 +15,9 @@ export default function handleRegisterThunk(registerThunk) {
     [registerThunk.rejected]: (state, action) => {
       state.isSignUpLoading = false;
       state.isSignUpError = true;
-      state.signUpError = action.payload.message;
+      state.signUpError =
+        action.payload?.response.data.message ||
+        "네트워크 통신에 실패했습니다.";
       state.isSignUpSuccess = false;
     },
   };

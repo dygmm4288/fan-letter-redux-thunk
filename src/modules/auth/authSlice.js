@@ -10,13 +10,7 @@ import {
 import handleLoginThunk from "./handleLoginThunk";
 import handleRegisterThunk from "./handleRegisterThunk";
 // TODO: 더 줄일 수 있나 ? 이게 최선인가?
-const initialState = {
-  userId: getUserIdFromLocal(),
-  avatar: getAvatarSrcFromLocal(),
-  nickname: getNickNameFromLocal(),
-
-  isLogin: getAccessTokenFromLocal() ? true : false,
-
+const initialLoadingState = {
   isSignUpLoading: false,
   isSignUpError: false,
   isSignUpSuccess: false,
@@ -24,29 +18,44 @@ const initialState = {
 
   isLogInLoading: false,
   isLogInError: false,
+  isLogInSuccess: false,
   logInError: null,
+};
+const initialState = {
+  userId: getUserIdFromLocal(),
+  avatar: getAvatarSrcFromLocal(),
+  nickname: getNickNameFromLocal(),
+
+  isLogin: getAccessTokenFromLocal() ? true : false,
+
+  ...initialLoadingState,
 };
 
 export const registerThunk = createAsyncThunk(
   "auth/register",
   async (payload, thunkAPI) => {
-    const response = await axios.post(
-      process.env.REACT_APP_AUTH_URL + "/register",
-      {
-        id: payload.id,
-        password: payload.password,
-        nickname: payload.nickname,
-      },
-    );
-    if (response.data.success) {
-      return response.data;
+    try {
+      const response = await axios.post(
+        process.env.REACT_APP_AUTH_URL + "/register",
+        {
+          id: payload.id,
+          password: payload.password,
+          nickname: payload.nickname,
+        },
+      );
+
+      if (response.data.success) {
+        return response.data;
+      }
+      return thunkAPI.rejectWithValue(response.data);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err);
     }
-    thunkAPI.rejectWithValue(response.data);
   },
 );
 
 export const logInThunk = createAsyncThunk(
-  "auth/logIn",
+  "auth/log-in",
   async (payload, thunkAPI) => {
     try {
       const response = await axios.post(
@@ -60,8 +69,37 @@ export const logInThunk = createAsyncThunk(
       if (success) {
         return { accessToken, userId, avatar, nickname };
       }
+      return thunkAPI.rejectWithValue(response.data);
     } catch (err) {
       return thunkAPI.rejectWithValue(err);
+    }
+  },
+);
+
+export const updateProfileThunk = createAsyncThunk(
+  "auth/update-profile",
+  async (payload, thunkAPI) => {
+    const accessToken = thunkAPI.getState().authReducer.accessToken;
+    const headers = {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${accessToken}`,
+    };
+    const { avatar, nickname } = payload;
+    try {
+      const response = await axios.patch(
+        process.env.REACT_APP_AUTH_URL + "/profile",
+        {
+          avatar,
+          nickname,
+        },
+        { headers },
+      );
+      if (response.data.success) {
+        return response.data;
+      }
+      return thunkAPI.rejectWithValue(response.data);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
     }
   },
 );
@@ -74,6 +112,12 @@ const authSlice = createSlice({
       state.isLogin = false;
       setAccessTokenAtLocal(null);
     },
+    clearLoadingState: (state) => {
+      return {
+        ...state,
+        ...initialLoadingState,
+      };
+    },
   },
   extraReducers: {
     // TODO : 여기 반복이 많은데 이거 줄일 수 있지 않을까?
@@ -84,7 +128,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { signOut } = authSlice.actions;
+export const { signOut, clearLoadingState } = authSlice.actions;
 
 export const selectAuth = (store) => store.authReducer;
 
