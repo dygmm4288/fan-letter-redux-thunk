@@ -14,7 +14,9 @@ export const fetchLettersThunk = createAsyncThunk(
   "letter/fetchLetterThunk",
   async (payload, thunkAPI) => {
     try {
-      const response = await jsonServerInstance.get("/letters");
+      const response = await jsonServerInstance.get(
+        "/letters?_sort=createdAt&_order=desc",
+      );
       return response.data;
     } catch (err) {
       thunkAPI.dispatch(signOut());
@@ -143,7 +145,6 @@ export const selectMemberName = (store) =>
   store.letterReducer.selectedMemberName;
 export const selectLetters = (store) => store.letterReducer.letters;
 export const selectLetter = (id) => (store) => {
-  console.log(store.letterReducer.letters);
   return store.letterReducer.letters.find(
     (letter) => letter.id.toString() === id.toString(),
   );
