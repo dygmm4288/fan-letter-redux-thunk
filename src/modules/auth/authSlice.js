@@ -6,28 +6,30 @@ import {
   getNickNameFromLocal,
   getUserIdFromLocal,
   setAccessTokenAtLocal,
+  setAvatarSrcAtLocal,
+  setNickNameAtLocal,
+  setUserIdAtLocal,
 } from "lib/localStorage";
 import { authServerInstance } from "../../api/serverInstance";
-import handleLoginThunk from "./handleLoginThunk";
-import handleRegisterThunk from "./handleRegisterThunk";
-import handleUpdateProfileThunk from "./handleUpdateProfileThunk";
+import handleThunkStatus from "./handleThunkStatus";
+const SIGN_UP = "SignUp";
+const LOG_IN = "LogIn";
+const UPDATE_PROFILE = "UpdateProfile";
 
-// TODO: 더 줄일 수 있나 ? 이게 최선인가?
+const createLoadingState = (actionName) => {
+  return {
+    [`is${actionName}Loading`]: false,
+    [`is${actionName}Error`]: false,
+    [`is${actionName}Success`]: false,
+    [`${actionName.slice(0, 1).toLowerCase(0) + actionName.slice(1)}Error`]:
+      null, // to CamelCase
+  };
+};
+
 const initialLoadingState = {
-  isSignUpLoading: false,
-  isSignUpError: false,
-  isSignUpSuccess: false,
-  signUpError: null,
-
-  isLogInLoading: false,
-  isLogInError: false,
-  isLogInSuccess: false,
-  logInError: null,
-
-  isUpdateLoading: false,
-  isUpdateError: false,
-  isUpdateSuccess: false,
-  updateError: null,
+  ...createLoadingState(SIGN_UP),
+  ...createLoadingState(LOG_IN),
+  ...createLoadingState(UPDATE_PROFILE),
 };
 const initialState = {
   userId: getUserIdFromLocal(),
@@ -133,9 +135,39 @@ const authSlice = createSlice({
     // TODO : 여기 반복이 많은데 이거 줄일 수 있지 않을까?
     // ? 일단 모듈로 변경을 했는데 이렇게 하면 reducer에 대해서 한눈에 알아보기는 쉬울텐데
     // ? 과연 좋은 판단일까? 내 요점은 관심사의 분리.... 근데 이 파일이 과연 관심사의 분리를 한게 맞을 까?
-    ...handleRegisterThunk(registerThunk),
-    ...handleLoginThunk(logInThunk),
-    ...handleUpdateProfileThunk(updateProfileThunk),
+    ...handleThunkStatus(SIGN_UP, registerThunk),
+
+    ...handleThunkStatus(LOG_IN, logInThunk, {
+      onSuccess: (payload) => {
+        const { accessToken, userId, avatar, nickname } = payload;
+
+        setAccessTokenAtLocal(accessToken);
+        setUserIdAtLocal(userId);
+        setNickNameAtLocal(nickname);
+        setAvatarSrcAtLocal(avatar);
+
+        return {
+          userId,
+          avatar,
+          nickname,
+        };
+      },
+      onError: () => {
+        setAccessTokenAtLocal(null);
+        setUserIdAtLocal(null);
+        setNickNameAtLocal(null);
+        setAvatarSrcAtLocal(null);
+      },
+    }),
+
+    ...handleThunkStatus(UPDATE_PROFILE, updateProfileThunk, {
+      onSuccess: (payload) => {
+        const nextState = {};
+        if (payload?.nickname) nextState.nickname = payload.nickname;
+        if (payload?.avatar) nextState.avatar = payload.avatar;
+        return nextState;
+      },
+    }),
   },
 });
 
