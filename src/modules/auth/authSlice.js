@@ -113,6 +113,7 @@ export const updateProfileThunk = createAsyncThunk(
       }
       return thunkAPI.rejectWithValue(response.data);
     } catch (error) {
+      thunkAPI.dispatch(signOut(error.response.data.message));
       return thunkAPI.rejectWithValue(error);
     }
   },
@@ -122,8 +123,9 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    signOut: (state) => {
+    signOut: (state, action) => {
       state.isLogin = false;
+      if (action.payload) state.logInError = action.payload;
       setAccessTokenAtLocal(null);
     },
     clearLoadingState: (state) => {
