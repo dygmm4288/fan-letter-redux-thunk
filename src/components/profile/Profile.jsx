@@ -7,13 +7,14 @@ import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import styled from "styled-components";
+import defaultAvatar from "../../assets/img/default-avatar.png";
 
 export default function Profile() {
   const { userId, nickname, avatar } = useSelector(selectAuth);
 
   const [isEditingMode, setIsEditingMode] = useState(false);
   const [editedNickName, handleEditedNickName] = useInput(nickname);
-  const [avatarSrc, setAvatarSrc] = useState(avatar);
+  const [avatarSrc, setAvatarSrc] = useState(avatar || defaultAvatar);
 
   const dispatch = useDispatch();
 
