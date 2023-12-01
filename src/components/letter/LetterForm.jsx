@@ -12,7 +12,7 @@ import useInput from "../hooks/useInput";
 
 export default function LetterForm() {
   const { nickname, userId } = useSelector(selectAuth);
-  const [content, handleContent] = useInput();
+  const [content, handleContent, setContent] = useInput();
 
   const dispatch = useDispatch();
   const selectedMemberName = useSelector(selectMemberName);
@@ -27,6 +27,7 @@ export default function LetterForm() {
     dispatch(
       createLetterThunk({ nickname, content, selectedMemberName, userId }),
     );
+    setContent("");
   };
 
   return (
