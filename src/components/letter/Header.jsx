@@ -2,7 +2,7 @@ import members from "data/members";
 import { selectMemberName, setSelectedMemberName } from "modules/letterSlice";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import aespa from "../assets/img/aespa.jpg";
+import aespa from "../../assets/img/aespa.jpg";
 
 export default function Header() {
   const selectedMemberName = useSelector(selectMemberName);

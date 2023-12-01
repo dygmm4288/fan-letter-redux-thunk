@@ -1,4 +1,4 @@
-import Header from "components/Header";
+import Header from "components/letter/Header";
 import LetterForm from "components/letter/LetterForm";
 import LetterList from "components/letter/LetterList";
 import { fetchLettersThunk } from "modules/letterSlice";
