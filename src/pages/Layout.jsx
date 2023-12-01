@@ -16,9 +16,7 @@ export default function Layout() {
         <Link to='/'>Home</Link>
         <StUserProfileContainer>
           <Link to='/profile'>내 프로필</Link>
-          <span href='#' onClick={handleSignOut}>
-            로그아웃
-          </span>
+          <span onClick={handleSignOut}>로그아웃</span>
         </StUserProfileContainer>
       </StHeader>
       <Outlet />

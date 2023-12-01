@@ -24,7 +24,7 @@ export default function LetterDetail({ letter }) {
   const { userId } = useSelector(selectAuth);
   const [isEditingMode, setIsEditingMode] = useState(false);
   const [editedContent, handleEditContent] = useInput(content);
-  console.log({ author, userId, letter });
+
   const dispatch = useDispatch();
 
   const { confirmModal } = useModal();

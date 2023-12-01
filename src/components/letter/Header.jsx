@@ -1,4 +1,5 @@
 import members from "data/members";
+import _ from "lodash";
 import { selectMemberName, setSelectedMemberName } from "modules/letterSlice";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
@@ -21,7 +22,7 @@ export default function Header() {
             <StyledNavListItem
               key={memberName}
               onClick={handleSelectMember(memberName)}
-              $selectedMember={selectedMemberName === memberName}>
+              $selectedMember={_.isEqual(selectedMemberName, memberName)}>
               {memberName}
             </StyledNavListItem>
           ))}
