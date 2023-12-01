@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getAccessTokenFromLocal } from "lib/localStorage";
 
-const authServerInstance = axios.create({
+export const authServerInstance = axios.create({
   baseURL: process.env.REACT_APP_AUTH_URL,
 });
 

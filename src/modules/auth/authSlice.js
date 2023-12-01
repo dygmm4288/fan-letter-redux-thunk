@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import jsonServerInstance from "api/serverInstance";
-import axios from "axios";
 import {
   getAccessTokenFromLocal,
   getAvatarSrcFromLocal,
@@ -8,6 +7,7 @@ import {
   getUserIdFromLocal,
   setAccessTokenAtLocal,
 } from "lib/localStorage";
+import { authServerInstance } from "../../api/serverInstance";
 import handleLoginThunk from "./handleLoginThunk";
 import handleRegisterThunk from "./handleRegisterThunk";
 import handleUpdateProfileThunk from "./handleUpdateProfileThunk";
@@ -42,14 +42,11 @@ export const registerThunk = createAsyncThunk(
   "auth/register",
   async (payload, thunkAPI) => {
     try {
-      const response = await axios.post(
-        process.env.REACT_APP_AUTH_URL + "/register",
-        {
-          id: payload.id,
-          password: payload.password,
-          nickname: payload.nickname,
-        },
-      );
+      const response = await authServerInstance.post("/register", {
+        id: payload.id,
+        password: payload.password,
+        nickname: payload.nickname,
+      });
 
       if (response.data.success) {
         return response.data;
@@ -65,13 +62,10 @@ export const logInThunk = createAsyncThunk(
   "auth/log-in",
   async (payload, thunkAPI) => {
     try {
-      const response = await axios.post(
-        process.env.REACT_APP_AUTH_URL + "/login?expiresIn=1m",
-        {
-          id: payload.id,
-          password: payload.password,
-        },
-      );
+      const response = await authServerInstance.post("/login", {
+        id: payload.id,
+        password: payload.password,
+      });
       const { accessToken, userId, success, avatar, nickname } = response.data;
       if (success) {
         return { accessToken, userId, avatar, nickname };
@@ -94,8 +88,8 @@ export const updateProfileThunk = createAsyncThunk(
     };
     const { avatar, nickname } = payload;
     try {
-      const response = await axios.patch(
-        process.env.REACT_APP_AUTH_URL + "/profile",
+      const response = await authServerInstance.patch(
+        "/profile",
         {
           avatar,
           nickname,
