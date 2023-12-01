@@ -1,24 +1,30 @@
 import Avatar from "components/common/Avatar";
 import StyledButton from "components/common/Button";
 import useInput from "components/hooks/useInput";
-import _ from "lodash";
 import { selectAuth, updateProfileThunk } from "modules/auth/authSlice";
 import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
 import styled from "styled-components";
 import defaultAvatar from "../../assets/img/default-avatar.png";
 
 export default function Profile() {
   const { userId, nickname, avatar } = useSelector(selectAuth);
-
   const [isEditingMode, setIsEditingMode] = useState(false);
   const [editedNickName, handleEditedNickName] = useInput(nickname);
   const [avatarSrc, setAvatarSrc] = useState(avatar || defaultAvatar);
+  const [isDisabled, setIsDisabled] = useState(true);
 
   const dispatch = useDispatch();
 
   const inputRef = useRef(null);
+
+  const handleChangeDisabled = (event) => {
+    if (avatarSrc !== avatar || nickname !== editedNickName) {
+      setIsDisabled(false);
+      return;
+    }
+    setIsDisabled(true);
+  };
 
   const handleUpdateProfile = (event) => {
     event.preventDefault();
@@ -33,11 +39,8 @@ export default function Profile() {
       newUserProfile["nickname"] = editedNickName;
     }
 
-    if (_.isEmpty(newUserProfile)) {
-      toast.warn("변경사항이 없습니다.");
-    } else {
-      dispatch(updateProfileThunk(newUserProfile));
-    }
+    dispatch(updateProfileThunk(newUserProfile));
+
     handleToggleEditingMode();
   };
 
@@ -63,7 +66,9 @@ export default function Profile() {
 
   return (
     <StWrapper>
-      <StProfileWrapper onSubmit={handleUpdateProfile}>
+      <StProfileWrapper
+        onChange={handleChangeDisabled}
+        onSubmit={handleUpdateProfile}>
         <h1>프로필 관리</h1>
         <Avatar src={avatarSrc} onClick={handleOpenFileSystem} />
         <StFileInput
@@ -92,7 +97,9 @@ export default function Profile() {
             <StyledButton type={"button"} onClick={handleToggleEditingMode}>
               취소
             </StyledButton>
-            <StyledButton type={"submit"}>수정완료</StyledButton>
+            <StyledButton type={"submit"} disabled={isDisabled}>
+              수정완료
+            </StyledButton>
           </StButtonContainer>
         )}
       </StProfileWrapper>

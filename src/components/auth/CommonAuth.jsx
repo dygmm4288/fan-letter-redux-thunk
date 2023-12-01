@@ -1,5 +1,4 @@
 import _ from "lodash";
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 export const TYPE_LOGIN = "로그인";
@@ -9,18 +8,14 @@ export default function CommonAuth({
   type,
   children,
   handleSubmit,
-  checkValidation,
+  isDisabled,
 }) {
-  const [isValid, setIsValid] = useState(true);
-  const handleValidForm = () => {
-    setIsValid(!checkValidation());
-  };
   return (
     <StLoginWrapper>
-      <StLoginForm onChange={handleValidForm} onSubmit={handleSubmit}>
+      <StLoginForm onSubmit={handleSubmit}>
         <StLoginHeader>{type}</StLoginHeader>
         {children}
-        <StButton type='submit' disabled={isValid}>
+        <StButton type='submit' disabled={isDisabled}>
           {type}
         </StButton>
         <Link to={_.isEqual(type, TYPE_LOGIN) ? "/register" : "/login"}>

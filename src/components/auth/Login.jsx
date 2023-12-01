@@ -1,5 +1,4 @@
 import useInput from "components/hooks/useInput";
-import _ from "lodash";
 import { logInThunk, selectAuth } from "modules/auth/authSlice";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -26,14 +25,13 @@ export default function Login() {
     dispatch(logInThunk({ id, password }));
   };
 
-  const gte4 = _.partial(_.gte, _, 3);
-  const isValidated = () => _.every(_.map([id, password], _.size), gte4);
+  const isDisabled = !(id.length >= 4 && password.length >= 4);
 
   return (
     <CommonAuth
       type='로그인'
       handleSubmit={handleSignIn}
-      checkValidation={isValidated}>
+      isDisabled={isDisabled}>
       <StInput
         type='text'
         placeholder='아이디 (4~10글자)'
@@ -45,7 +43,7 @@ export default function Login() {
       />
       <StInput
         type='password'
-        placeholder='비밀번호 (4~s15글자)'
+        placeholder='비밀번호 (4~15글자)'
         minLength={4}
         maxLength={15}
         required
