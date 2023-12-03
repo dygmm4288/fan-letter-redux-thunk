@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import jsonServerInstance from "api/serverInstance";
 import {
-  getAccessTokenFromLocal,
-  getAvatarSrcFromLocal,
-  getNickNameFromLocal,
-  getUserIdFromLocal,
+  ACCESS_TOKEN,
+  AVATAR_SRC,
+  NICKNAME,
+  USER_ID,
+  getItemFromLocalStorage,
   setAccessTokenAtLocal,
   setAvatarSrcAtLocal,
   setNickNameAtLocal,
@@ -16,7 +17,7 @@ const SIGN_UP = "SignUp";
 const LOG_IN = "LogIn";
 const UPDATE_PROFILE = "UpdateProfile";
 
-const createLoadingState = (actionName) => {
+const createActionLoadingState = (actionName) => {
   return {
     [`is${actionName}Loading`]: false,
     [`is${actionName}Error`]: false,
@@ -27,15 +28,15 @@ const createLoadingState = (actionName) => {
 };
 
 const initialLoadingState = {
-  ...createLoadingState(SIGN_UP),
-  ...createLoadingState(LOG_IN),
-  ...createLoadingState(UPDATE_PROFILE),
+  ...createActionLoadingState(SIGN_UP),
+  ...createActionLoadingState(LOG_IN),
+  ...createActionLoadingState(UPDATE_PROFILE),
 };
 const initialState = {
-  userId: getUserIdFromLocal(),
-  avatar: getAvatarSrcFromLocal(),
-  nickname: getNickNameFromLocal(),
-  isLogin: getAccessTokenFromLocal() ? true : false,
+  userId: getItemFromLocalStorage(USER_ID),
+  avatar: getItemFromLocalStorage(AVATAR_SRC),
+  nickname: getItemFromLocalStorage(NICKNAME),
+  isLogin: !!getItemFromLocalStorage(ACCESS_TOKEN),
 
   ...initialLoadingState,
 };
@@ -82,8 +83,10 @@ export const logInThunk = createAsyncThunk(
 export const updateProfileThunk = createAsyncThunk(
   "auth/update-profile",
   async (payload, thunkAPI) => {
-    const accessToken = getAccessTokenFromLocal();
-    const userId = getUserIdFromLocal();
+    const [accessToken, userId] = getItemFromLocalStorage([
+      ACCESS_TOKEN,
+      USER_ID,
+    ]);
     const headers = {
       "Content-Type": "multipart/form-data",
       Authorization: `Bearer ${accessToken}`,
@@ -150,6 +153,7 @@ const authSlice = createSlice({
           userId,
           avatar,
           nickname,
+          isLogin: true,
         };
       },
       onError: () => {
