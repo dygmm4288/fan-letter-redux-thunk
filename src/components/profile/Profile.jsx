@@ -19,7 +19,10 @@ export default function Profile() {
   const inputRef = useRef(null);
 
   const handleChangeDisabled = (event) => {
-    if (avatarSrc !== avatar || nickname !== editedNickName) {
+    if (
+      (event.target.name === "avatar" && event.target.value !== avatar) ||
+      (event.target.name === "nickname" && event.target.value !== nickname)
+    ) {
       setIsDisabled(false);
       return;
     }
@@ -73,6 +76,7 @@ export default function Profile() {
         <Avatar src={avatarSrc} onClick={handleOpenFileSystem} />
         <StFileInput
           type='file'
+          name='avatar'
           ref={inputRef}
           onChange={handleUploadInputImgFile}
           disabled={!isEditingMode}
@@ -82,6 +86,7 @@ export default function Profile() {
         ) : (
           <input
             value={editedNickName}
+            name='nickname'
             placeholder='아이디 (4~10글자)'
             onChange={handleEditedNickName}
           />
