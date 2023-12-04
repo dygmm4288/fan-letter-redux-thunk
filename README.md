@@ -8,37 +8,20 @@
 - Home 페이지 : 각 멤버별 응원 메시지 작성, 간단한 팬래터 확인 가능
 - Detail 페이지 : 각 팬레터 내용을 수정 및 삭제할 수 있는 페이지
 
-# 구현 사항
+# 추가 구현 사항
 
-- Props driling, Context API, Redux를 이용한 각각의 전역 상태 관리
-- 팬래터 CRUD 구현 (작성, 조회, 수정, 삭제)
-  - 아티스트 별 게시물 조회 기능 구현
-    - 팬래터가 없을 경우 비어있는 팬래터라고 표시
-  - 팬레터 상세 화면 구현
-  - 팬래터 내용 수정 구현
-    - 업데이트 된 내용이 없다면 alert창이 뜨면서 수정이 안됨
-  - 팬래터 삭제 구현
-    - 삭제 시 바로 삭제가 아닌 confirm을 통해서 삭제를 되도록 구현
-- styled-components를 이용한 스타일링
-- 올바르지 않은 경로로 접근 시 에러 페이지 노출
+- Redux, redux toolkit을 이용한 전역 상태 관리, redux-thunk를 이용한 비동기 동작 구현
+- 인증 서버를 통한 로그인 / 회원가입 구현
+- 회원 프로필 정보 및 변경 기능 제공
+- json 서버를 통한 팬래터 CRUD 비동기 구현
+- 커스텀 모달 및 react-toastify를 이용한 알림창 구현
 
-# 구현 시 고려 사항
-
-- 삼항 연산자 대신 함수 사용으로 가독성 향상 의도
-  ![삼항연산자를 함수를 이용해서 구현](./readmeAssets/conditional-operator.png)
-- 공통 버튼, 공통 아바타를 통한 재사용성 향상 의도
-
-  - 랜더 속성값을 이용한 컴포넌트 가독성 향상 의도
-    ![Alt text](./readmeAssets/Button.png)
-    ![Alt text](./readmeAssets/Avatar.png)
-
-- 컨테이너 컴포넌트, 프레젠테이션 컴포넌트 분리
-- 멤버 팬래터 값이 변할 경우 로컬 스토리지에 자동 저장될 수 있도록 미들웨어 적용
-  ![Alt text](./readmeAssets/middleware.png)
-- 올바르지 않은 경로로 접근 시 에러 페이지 노출
-  ![Alt text](./readmeAssets/errorPage.png)
-
-# 페이지 스크린샷
-
-![Alt text](./readmeAssets/page.png)
-![Alt text](./readmeAssets/page2.png)
+# 구현 시 주요 고려 사항
+- 비로그인 시 router에서 분기 처리 통해 인증된 사용자가 아니라면 로그인 페이지 이동
+- 로그인 / 회원가입 오류 시  react-toastify를 통한 에러 메시지 제공
+- json server crud 구현
+- 회원 프로필 정보 변경 시 해당 회원이 작성한 팬래터도 연동하여 변경
+- 로그인 / 회원가입 시 유효성 검사 후 버튼 활성하
+- json server crud 시 access token을 이용한 인가 확인 작업 수행 후 crud 실행
+  * axios interceptor 이용
+  * access token 만료된 유저인 경우 crud 이용하지 못하게 구현
